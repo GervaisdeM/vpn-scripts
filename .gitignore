@@ -1,0 +1,10 @@
+# Mac OS X
+*.DS_Store
+
+# Junk files
+*.swp
+*.swo
+
+# customer config files
+*-vpn.sh
+*-env
