@@ -1,0 +1,24 @@
+# Adjust these to match the VPN you are trying to connect to
+
+myHost="192.168.2.2"
+myPort="10443"
+myProtocol="fortinet"
+myUser="myvpnUsername"
+
+# Change the connection parameters below to include what you need
+vpnConnect() {
+  openconnect \
+    --protocol=${myProtocol} \
+    --user=${myUser} \
+    --passwd-on-stdin \
+    --background \
+    #--servercert pin-sha256:Vsdasdasasdadads \
+    --pid-file=$pidFile \
+    ${myHost}:${myPort} \
+    < ~/.${myName}-password > /dev/null 2>&1
+
+# Nothing below should be altered
+  if [ "$?" -eq 0 ]; then
+    echo -e "${greenTXT}VPN connected.${resetTXT}"
+  fi
+}
