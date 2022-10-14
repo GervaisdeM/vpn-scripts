@@ -23,9 +23,9 @@ brew install openconnect
 * cd into vpn-scripts
 * make a symnlink based on the name of the connection to vpn.sh
 * copy example-vpn-env to a file with matching the symlink name
-* adjust symlinkname-vpn.sh for that vpn connection - this is the only file you should need to edit
+* adjust symlinkname-vpn-env for that vpn connection - this is the only file you should need to edit
 * create a file named `~/.matchingname-password` and put your password in it
-* launch the script based on the symlink name - you never run `vpn.sh`
+* launch the script by calling the symlink name - you never run `vpn.sh`
 
 ### example
 #### set up customer1 vpn
