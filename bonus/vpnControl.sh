@@ -26,8 +26,11 @@
 #         https://github.com/GervaisdeM/vpn-scripts
 #     4. Adjust the defaults below:
 #         vpnServerName ... Name of the VM you created. I call mine vpn-linux
-#         vpnName ......... most used vpn set up on vpnServerName
 #         vpnScriptPath ... the path to vpn-scripts on vpnSeverName
+#     5. Optionally set the myDefaultVPN environment variable to your most used
+#         vpn that you set up on vpnServerName.
+#         Example:
+#           echo 'export myDefaultVPN="myCompanyVPN"' >> ~/.bash_profile
 #     5. Set up your local ~/.ssh/config to use vpnServerName as the jump server
 #         for all your ssh connections that require you to connect through a
 #         vpn configured on vpnServerName
@@ -43,12 +46,12 @@
 # }}}
 # {{{ set some default values
 
-vpnName="myCompanyVPN"
 vpnScriptPath="~/vpn-scripts"
 vpnServerName="VPN-Linux"
+vmStartWait=10
 
 # }}}
-# {{{ showUzosage()
+# {{{ showUsage()
 
 showUsage()
 {
@@ -64,10 +67,26 @@ Usage:
   -s,  --status ........ Status of connection vpnName
   -h,  --help .......... Display this help
 
-N.B. Default vpnName is $vpnName
+N.B. Set myDefaultVPN environment variable to set default vpnName
+     If myDefaultVPN is not set, then vpnName must be passed to this script
 
 EOT
 exit 3
+}
+
+# }}}
+# {{{ checkVPNname()
+
+checkVPNname(){
+  if [ -n "$1" ]; then
+    vpnName="$1"
+  else
+    if [ -z "$myDefaultVPN" ]; then
+      showUsage
+    else
+      vpnName=$myDefaultVPN
+    fi
+  fi
 }
 
 # }}}
@@ -76,14 +95,25 @@ exit 3
 startVPNlinux() {
   echo -n "Starting $vpnServerName Server"
   osascript -e "open location \"utm://start?name=$vpnServerName\""
+  if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
+    osascript -e 'tell application "Terminal" to activate'
+  fi
   myWaitCount=0
-  ping -c 1 -t 1 $vpnServerName > /dev/null
+  ping -c 1 -t 1 $vpnServerName > /dev/null 2>&1
   pingResult=$?
   while [ $pingResult -ne 0 ] || [ $myWaitCount -lt 30 ]; do
     echo -n "."
     ping -c 1 -t 1 $vpnServerName > /dev/null 2>&1
     pingResult=$?
     let myWaitCount=myWaitCount+1
+  done
+  echo -e "\nWaiting $vmStartWait seconds for vm to fully initialize"
+  echo -n "$vmStartWait"
+  myWaitCount=0
+  while [ $myWaitCount -lt $vmStartWait ]; do
+    sleep 1
+    let vmStartWait=vmStartWait-1
+    echo -n "..$vmStartWait"
   done
   echo ""
 }
@@ -126,7 +156,7 @@ vpnLinuxShutdown() {
   checkVPNLinuxState
   if [ "${VPNlinuxState}" -eq 1 ]; then
     echo "Shutting down $vpnServerName Server"
-    ssh $vpnServerName "sudo poweroff"
+    ssh $vpnServerName "sudo poweroff &"
   else
     echo "$vpnServerName Server is already offline"
   fi
@@ -166,15 +196,11 @@ parseOpts() {
   else
     case $1 in
       -c|--connect)
-        if [ -n "$2" ]; then
-          vpnName=$2
-        fi
+        checkVPNname $2
         vpnConnect
         ;;
       -d|--disconnect)
-        if [ -n "$2" ]; then
-          vpnName=$2
-        fi
+        checkVPNname $2
         vpnDisconnect
         ;;
       -ls|--list)
@@ -184,9 +210,7 @@ parseOpts() {
         vpnLinuxShutdown
         ;;
       -s|--status)
-        if [ -n "$2" ]; then
-          vpnName=$2
-        fi
+        checkVPNname $2
         vpnStatus
         ;;
       -h|--help)
