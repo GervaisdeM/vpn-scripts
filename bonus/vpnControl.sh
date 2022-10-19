@@ -27,10 +27,6 @@
 #     4. Adjust the defaults below:
 #         vpnServerName ... Name of the VM you created. I call mine vpn-linux
 #         vpnScriptPath ... the path to vpn-scripts on vpnSeverName
-#     5. Optionally set the myDefaultVPN environment variable to your most used
-#         vpn that you set up on vpnServerName.
-#         Example:
-#           echo 'export myDefaultVPN="myCompanyVPN"' >> ~/.bash_profile
 #     5. Set up your local ~/.ssh/config to use vpnServerName as the jump server
 #         for all your ssh connections that require you to connect through a
 #         vpn configured on vpnServerName
@@ -42,6 +38,12 @@
 #               Hostname 10.160.18.245
 #               User gervais
 #               ProxyJump vpn-linux
+#     6. Optional:
+#         a. Set the myDefaultVPN environment variable to your most used
+#           vpn that you set up on vpnServerName
+#           Example:
+#             echo 'export myDefaultVPN="myCompanyVPN"' >> ~/.bash_profile
+#         b. symlink this script into your path
 
 # }}}
 # {{{ set some default values
