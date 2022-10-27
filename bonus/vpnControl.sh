@@ -98,6 +98,8 @@ startVPNlinux() {
   echo -n "Starting $vpnServerName Server"
   osascript -e "open location \"utm://start?name=$vpnServerName\""
   if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
+    sleep 1
+    echo -n "."
     osascript -e 'tell application "Terminal" to activate'
   fi
   myWaitCount=0
