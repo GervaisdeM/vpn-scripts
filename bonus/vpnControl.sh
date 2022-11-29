@@ -161,6 +161,11 @@ vpnLinuxShutdown() {
   if [ "${VPNlinuxState}" -eq 1 ]; then
     echo "Shutting down $vpnServerName Server"
     ssh $vpnServerName "sudo poweroff &"
+    checkVPNLinuxState
+    while [ "${VPNlinuxState}" -eq 1 ]; do
+      checkVPNLinuxState
+    done
+    ps aux | ack QEMULauncher > /dev/null || osascript -e 'tell application "UTM" to quit'
   else
     echo "$vpnServerName Server is already offline"
   fi
