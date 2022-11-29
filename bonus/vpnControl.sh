@@ -165,7 +165,7 @@ vpnLinuxShutdown() {
     while [ "${VPNlinuxState}" -eq 1 ]; do
       checkVPNLinuxState
     done
-    ps aux | ack QEMULauncher > /dev/null || osascript -e 'tell application "UTM" to quit'
+    ps aux | ack 'QEMULauncher|com.apple.Virtualization.VirtualMachine.xpc' > /dev/null || osascript -e 'tell application "UTM" to quit'
   else
     echo "$vpnServerName Server is already offline"
   fi
