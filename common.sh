@@ -1,28 +1,28 @@
 # Default values for scripts in this directory
 
-# Colors
-if [ -t 1 ]; then
-  boldTXT="\e[1m"
-  noBoldTXT="\e[0m"
-  resetTXT="\e[39m"
-  greenTXT="\e[32m"
-  redTXT="\e[31m"
-  yellowTXT="\x1B[33m"
-fi
+#{{{ Set Colours
 
+boldTXT="\e[1m"
+noBoldTXT="\e[0m"
+resetTXT="\e[39m"
+greenTXT="\e[32m"
+redTXT="\e[31m"
+yellowTXT="\x1B[33m"
+
+# }}}
 # {{{ sanityCheck()
 
 sanityCheck() {
   # Set up password
   if [ ! -f ~/.${myName}-password ]; then
-    echo "Please put your password in ~/.${myName}-password"
+    printf "Please put your password in ~/.${myName}-password\n"
     exit 1
   fi
 
   # Set up connection
   if [ ! -f ${myDir}/${myName}-env ]; then
-    echo -e "${yellowTXT}${myName}-env not found${resetTXT}"
-    echo "Please put connection params in ${myDir}/${myName}-env"
+    printf "${yellowTXT}${myName}-env not found${resetTXT}\n"
+    printf "Please put connection params in ${myDir}/${myName}-env\n"
     exit 1
   else
     source ${myDir}/${myName}-env
@@ -59,7 +59,7 @@ vpnDisconnect() {
   if [ -f ${pidFile} ]; then
     kill $(cat ${pidFile})
     sleep .5
-    echo -e "${boldTXT}${yellowTXT}Disconnected${resetTXT}${noBoldTXT}"
+    printf "${boldTXT}${yellowTXT}Disconnected${resetTXT}${noBoldTXT}\n"
   else
     $0 -s
   fi
@@ -74,13 +74,13 @@ vpnStatus() {
     if [ -f ${pidFile} ]; then
       ps p $(cat $pidFile) | grep ${myName} > /dev/null
       if [ $? -eq 0 ]; then
-        echo -e "${greenTXT}VPN ${myName} connected.${resetTXT}"
+        printf "${greenTXT}VPN ${myName} connected.${resetTXT}\n"
         exit 0
       fi
     else
       otherName=$(ps p ${openconnectPid} | grep -o "\/var\/run\/.\+\.pid" | cut -d"/" -f4 | cut -d"." -f1)
-      echo -e "${redTXT}${otherName} is already connected!${resetTXT}"
-      echo -e "Run ${boldTXT}${myDir}/${otherName}.sh -d${noboldTXT} and try again."
+      printf  "${redTXT}${otherName} is already connected!${resetTXT}\n"
+      printf  "Run ${boldTXT}${myDir}/${otherName}.sh -d${noboldTXT} and try again.\n"
       exit 1
     fi
   fi
@@ -97,7 +97,7 @@ parseOpts() {
       case $opt in
         c)
           vpnStatus
-          echo -e "Connecting to ${boldTXT}${myName}${noboldTXT}..."
+          printf "Connecting to ${boldTXT}${myName}${noboldTXT}...\n"
           vpnConnect
           ;;
         d)
@@ -105,7 +105,7 @@ parseOpts() {
           ;;
         s)
           vpnStatus
-          echo -e "${yellowTXT}No active connections${resetTXT}"
+          printf "${yellowTXT}No active connections${resetTXT}\n"
           ;;
         h)
           showUsage

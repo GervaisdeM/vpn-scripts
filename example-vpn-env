@@ -19,6 +19,6 @@ vpnConnect() {
 
 # Nothing below should be altered
   if [ "$?" -eq 0 ]; then
-    echo -e "${greenTXT}VPN connected.${resetTXT}"
+    printf "${greenTXT}VPN connected.${resetTXT}\n"
   fi
 }

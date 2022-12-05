@@ -48,6 +48,14 @@
 # }}}
 # {{{ set some default values
 
+#Set Colours
+boldTXT="\e[1m"
+noBoldTXT="\e[0m"
+resetTXT="\e[39m"
+greenTXT="\e[32m"
+redTXT="\e[31m"
+yellowTXT="\x1B[33m"
+
 vpnScriptPath="~/vpn-scripts"
 vpnServerName="VPN-Linux"
 vmStartWait=10
@@ -95,30 +103,31 @@ checkVPNname(){
 # {{{ startVPNlinux()
 
 startVPNlinux() {
-  echo -n "Starting $vpnServerName Server"
+  printf "Starting ${boldTXT}${vpnServerName}${noBoldTXT} Server\n"
   osascript -e "open location \"utm://start?name=$vpnServerName\""
   if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
     sleep 1
-    echo -n "."
+    printf "."
     osascript -e 'tell application "Terminal" to activate'
   fi
   myWaitCount=0
   ping -c 1 -t 1 $vpnServerName > /dev/null 2>&1
   pingResult=$?
   while [ $pingResult -ne 0 ] && [ $myWaitCount -lt 30 ]; do
+    printf "."
     ping -c 1 -t 1 $vpnServerName > /dev/null 2>&1
     pingResult=$?
     let myWaitCount=myWaitCount+1
   done
-  echo -e "\nWaiting $vmStartWait seconds for vm to fully initialize"
-  echo -n "$vmStartWait"
+  printf "\nWaiting $vmStartWait seconds for vm to fully initialize\n"
+  printf "$vmStartWait"
   myWaitCount=0
   while [ $myWaitCount -lt $vmStartWait ]; do
     sleep 1
     let vmStartWait=vmStartWait-1
-    echo -n "..$vmStartWait"
+    printf "..$vmStartWait"
   done
-  echo ""
+  printf "\n"
 }
 
 # }}}
@@ -148,7 +157,7 @@ vpnDisconnect() {
     if [ "${VPNlinuxState}" -eq 1 ]; then
     ssh $vpnServerName "${vpnScriptPath}/${vpnName}-vpn.sh -d"
   else
-    echo "VPN not connected"
+    printf "${yellowTXT}VPN not connected${resetTXT}\n"
   fi
 }
 
@@ -158,7 +167,7 @@ vpnDisconnect() {
 vpnLinuxShutdown() {
   checkVPNLinuxState
   if [ "${VPNlinuxState}" -eq 1 ]; then
-    echo "Shutting down $vpnServerName Server"
+    printf "Shutting down ${boldTXT}${vpnServerName}${noBoldTXT} Server\n"
     ssh $vpnServerName "sudo poweroff &"
     checkVPNLinuxState
     while [ "${VPNlinuxState}" -eq 1 ]; do
@@ -166,7 +175,7 @@ vpnLinuxShutdown() {
     done
     ps aux | ack 'QEMULauncher|com.apple.Virtualization.VirtualMachine.xpc' > /dev/null || osascript -e 'tell application "UTM" to quit'
   else
-    echo "$vpnServerName Server is already offline"
+    printf "${yellowTXT}${vpnServerName} Server is already offline${resetTXT}\n"
   fi
 
 }
@@ -179,7 +188,7 @@ vpnStatus() {
   if [ "${VPNlinuxState}" -eq 1 ]; then
     ssh $vpnServerName "${vpnScriptPath}/${vpnName}-vpn.sh -s"
   else
-    echo "VPN not connected"
+    printf "VPN not connected\n"
   fi
 }
 
@@ -191,7 +200,7 @@ vpnList() {
   if [ "${VPNlinuxState}" -eq 0 ]; then
     startVPNlinux
   fi
-  echo "The following vpn's are configured:"
+  printf "The following vpn's are configured:\n"
   ssh $vpnServerName "ls -1 ${vpnScriptPath}/*-vpn.sh | rev | cut -d\"/\" -f1 | rev | sed \"s/-vpn.sh//\""
 }
 
