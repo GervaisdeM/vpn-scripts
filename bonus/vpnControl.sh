@@ -105,8 +105,7 @@ startVPNlinux() {
   myWaitCount=0
   ping -c 1 -t 1 $vpnServerName > /dev/null 2>&1
   pingResult=$?
-  while [ $pingResult -ne 0 ] || [ $myWaitCount -lt 30 ]; do
-    echo -n "."
+  while [ $pingResult -ne 0 ] && [ $myWaitCount -lt 30 ]; do
     ping -c 1 -t 1 $vpnServerName > /dev/null 2>&1
     pingResult=$?
     let myWaitCount=myWaitCount+1
