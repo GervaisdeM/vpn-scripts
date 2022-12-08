@@ -44,6 +44,7 @@
 #           Example:
 #             echo 'export myDefaultVPN="myCompanyVPN"' >> ~/.bash_profile
 #         b. symlink this script into your path
+#         c. if using 1password, set myDefaultVault environment variable
 
 # }}}
 # {{{ set some default values
@@ -77,14 +78,28 @@ Usage:
   -s,  --status ........ Status of connection vpnName
   -h,  --help .......... Display this help
 
-N.B. Set myDefaultVPN environment variable to set default vpnName
-     If myDefaultVPN is not set, then vpnName must be passed to this script
+N.B.
+    1. Set myDefaultVPN environment variable to set default vpnName
+       If myDefaultVPN is not set, then vpnName must be passed to this script
+    2. If using 1password command line set myDefaultVault environment variable
+       Create 1password entries for all vpn's configure:
+          op://\${myDefaultVault}/vpn-\${vpnName}/password
 
 EOT
 exit 3
 }
 
 # }}}
+#{{{ checkVaultName()
+
+checkVaultName() {
+  if [ -z "$myDefaultVault" ]; then
+    printf "${redTXT}Set environment variable myDefaultVault${resetTXT}\n"
+    showUsage
+  fi
+}
+
+#}}}
 # {{{ checkVPNname()
 
 checkVPNname(){
@@ -139,6 +154,31 @@ checkVPNLinuxState() {
 }
 
 # }}}
+#{{{ passwordFileCreate()
+
+passwordFileCreate() {
+  # op seems too generic. Let's make sure op is actually 1password
+  op --help | head -n1 | grep 1Password >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    checkVaultName
+    eval $(op signin)
+    myPassword=$(op read op://${myDefaultVault}/vpn-${vpnName}/password)
+    ssh $vpnServerName "echo $myPassword > ~/.${vpnName}-vpn-password"
+  fi
+}
+
+# }}}
+#{{{ passwordFileRemove()
+
+passwordFileRemove() {
+  # op seems too generic. Let's make sure op is actually 1password
+  op --help | head -n1 | grep 1Password >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    ssh $vpnServerName "rm ~/.${vpnName}-vpn-password"
+  fi
+}
+
+# }}}
 # {{{ vpnConnect()
 
 vpnConnect() {
@@ -146,7 +186,9 @@ vpnConnect() {
   if [ $VPNlinuxState -eq 0 ]; then
     startVPNlinux
   fi
+  passwordFileCreate
   ssh $vpnServerName "${vpnScriptPath}/${vpnName}-vpn.sh -c"
+  passwordFileRemove
 }
 
 # }}}
@@ -154,8 +196,10 @@ vpnConnect() {
 
 vpnDisconnect() {
   checkVPNLinuxState
-    if [ "${VPNlinuxState}" -eq 1 ]; then
+  if [ "${VPNlinuxState}" -eq 1 ]; then
+    passwordFileCreate
     ssh $vpnServerName "${vpnScriptPath}/${vpnName}-vpn.sh -d"
+    passwordFileRemove
   else
     printf "${yellowTXT}VPN not connected${resetTXT}\n"
   fi
@@ -186,7 +230,9 @@ vpnLinuxShutdown() {
 vpnStatus() {
   checkVPNLinuxState
   if [ "${VPNlinuxState}" -eq 1 ]; then
+    passwordFileCreate
     ssh $vpnServerName "${vpnScriptPath}/${vpnName}-vpn.sh -s"
+    passwordFileRemove
   else
     printf "VPN not connected\n"
   fi
@@ -213,11 +259,9 @@ parseOpts() {
   else
     case $1 in
       -c|--connect)
-        checkVPNname $2
         vpnConnect
         ;;
       -d|--disconnect)
-        checkVPNname $2
         vpnDisconnect
         ;;
       -ls|--list)
@@ -227,7 +271,6 @@ parseOpts() {
         vpnLinuxShutdown
         ;;
       -s|--status)
-        checkVPNname $2
         vpnStatus
         ;;
       -h|--help)
@@ -242,4 +285,5 @@ parseOpts() {
 
 #}}}
 
+checkVPNname $2
 parseOpts "$@"
