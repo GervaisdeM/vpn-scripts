@@ -162,7 +162,7 @@ passwordFileCreate() {
   if [ $? -eq 0 ]; then
     checkVaultName
     eval $(op signin)
-    myPassword=$(op read op://${myDefaultVault}/vpn-${vpnName}/password)
+    myPassword=$(op read op://${myDefaultVault}/vpn-${vpnName}-vpn/password)
     ssh $vpnServerName "echo $myPassword > ~/.${vpnName}-vpn-password"
   fi
 }

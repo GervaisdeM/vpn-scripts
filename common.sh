@@ -10,13 +10,52 @@ redTXT="\e[31m"
 yellowTXT="\x1B[33m"
 
 # }}}
+#{{{ checkVaultName()
+
+checkVaultName() {
+  if [ -z "$myDefaultVault" ]; then
+    printf "${redTXT}Set environment variable myDefaultVault${resetTXT}\n"
+    showUsage
+  fi
+}
+
+#}}}
+#{{{ passwordFileCreate()
+
+passwordFileCreate() {
+  if [ -z "$SUDO_COMMAND" ]; then
+    # op seems too generic. Let's make sure op is actually 1password
+    op --help | head -n1 | grep 1Password >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      checkVaultName
+      eval $(op signin)
+      myPassword=$(op read op://${myDefaultVault}/vpn-${myName}/password)
+      echo $myPassword > ~/.${myName}-password
+    else
+      printf "Please put your password in ~/.${myName}-password\n"
+      exit 1
+    fi
+  fi
+}
+
+# }}}
+#{{{ passwordFileRemove()
+
+passwordFileRemove() {
+  # op seems too generic. Let's make sure op is actually 1password
+  op --help | head -n1 | grep 1Password >/dev/null 2>&1
+  if [ $? -eq 0 ]; then
+    rm ~/.${myName}-password
+  fi
+}
+
+# }}}
 # {{{ sanityCheck()
 
 sanityCheck() {
   # Set up password
   if [ ! -f ~/.${myName}-password ]; then
-    printf "Please put your password in ~/.${myName}-password\n"
-    exit 1
+    passwordFileCreate
   fi
 
   # Set up connection
@@ -99,6 +138,7 @@ parseOpts() {
           vpnStatus
           printf "Connecting to ${boldTXT}${myName}${noboldTXT}...\n"
           vpnConnect
+          passwordFileRemove
           ;;
         d)
           vpnDisconnect
