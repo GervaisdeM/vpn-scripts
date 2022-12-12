@@ -14,7 +14,8 @@ yellowTXT="\x1B[33m"
 
 checkVaultName() {
   if [ -z "$myDefaultVault" ]; then
-    printf "${redTXT}Set environment variable myDefaultVault${resetTXT}\n"
+    printf "${redTXT}It looks like we are using 1Password.\n"
+    printf "Please set environment variable myDefaultVault${resetTXT}\n"
     showUsage
   fi
 }
