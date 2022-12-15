@@ -3,7 +3,7 @@
 ## Introduction
 I have to connect to multiple client vpn's for work and did not want to install vpn clients from multiple vendors, so I decided to use openconnect as it supports multiple protocols. The network-manager-gui controls were not working well for me on Ubuntu 22, so I decided to write a script to facilitate vpn connections.
 
-This script has been tested on Ubuntu, but should also work on macOS (the colour's will need adjusting).
+This script has been tested on Ubuntu and macOS.
 
 ## Requirements
 * openconnect
