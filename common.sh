@@ -147,6 +147,7 @@ parseOpts() {
         s)
           vpnStatus
           printf "${yellowTXT}No active connections${resetTXT}\n"
+          passwordFileRemove
           ;;
         h)
           showUsage
