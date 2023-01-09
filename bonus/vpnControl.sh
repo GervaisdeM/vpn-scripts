@@ -119,6 +119,7 @@ checkVPNname(){
 
 startVPNlinux() {
   printf "Starting ${boldTXT}${vpnServerName}${noBoldTXT} Server\n"
+  osascript -e 'tell application "UTM" to activate'
   osascript -e "open location \"utm://start?name=$vpnServerName\""
   if [ "$TERM_PROGRAM" = "Apple_Terminal" ]; then
     sleep 1
