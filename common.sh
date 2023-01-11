@@ -143,6 +143,7 @@ parseOpts() {
           ;;
         d)
           vpnDisconnect
+          passwordFileRemove
           ;;
         s)
           vpnStatus
