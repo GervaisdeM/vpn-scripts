@@ -216,9 +216,12 @@ vpnLinuxShutdown() {
     ssh $vpnServerName "sudo poweroff &"
     checkVPNLinuxState
     while [ "${VPNlinuxState}" -eq 1 ]; do
+      printf "."
       checkVPNLinuxState
+      sleep .5
     done
-    ps aux | ack 'QEMULauncher|com.apple.Virtualization.VirtualMachine.xpc' > /dev/null || osascript -e 'tell application "UTM" to quit'
+    printf "\n"
+    ps aux | ack 'QEMULauncher|com.apple.Virtualization.VirtualMachine.xpc' > /dev/null || sleep 1 ; osascript -e 'tell application "UTM" to quit'
   else
     printf "${yellowTXT}${vpnServerName} Server is already offline${resetTXT}\n"
   fi
