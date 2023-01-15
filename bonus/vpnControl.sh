@@ -221,10 +221,11 @@ vpnLinuxShutdown() {
       sleep .5
     done
     printf "\n"
-    ps aux | ack 'QEMULauncher|com.apple.Virtualization.VirtualMachine.xpc' > /dev/null || sleep 1 ; osascript -e 'tell application "UTM" to quit'
   else
     printf "${yellowTXT}${vpnServerName} Server is already offline${resetTXT}\n"
   fi
+  # Quit UTM is no other VM's are running
+  ps aux | ack 'QEMULauncher|com.apple.Virtualization.VirtualMachine.xpc' > /dev/null || sleep 1 ; osascript -e 'tell application "UTM" to quit'
 
 }
 
