@@ -34,10 +34,10 @@ passwordFileCreate() {
         eval $(op signin)
         myPassword=$(op read op://${myDefaultVault}/vpn-${myName}/password)
         echo $myPassword > ~/.${myName}-password
-      else
-        printf "Please put your password in ~/.${myName}-password\n"
-        exit 1
       fi
+    else
+      printf "Please put your password in ~/.${myName}-password\n"
+      exit 1
     fi
   fi
 }
