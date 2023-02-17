@@ -26,15 +26,18 @@ checkVaultName() {
 passwordFileCreate() {
   if [ -z "$SUDO_COMMAND" ]; then
     # op seems too generic. Let's make sure op is actually 1password
-    op --help | head -n1 | grep 1Password >/dev/null 2>&1
+    hash op >/dev/null 2>&1
     if [ $? -eq 0 ]; then
-      checkVaultName
-      eval $(op signin)
-      myPassword=$(op read op://${myDefaultVault}/vpn-${myName}/password)
-      echo $myPassword > ~/.${myName}-password
-    else
-      printf "Please put your password in ~/.${myName}-password\n"
-      exit 1
+      op --help | head -n1 | grep 1Password >/dev/null 2>&1
+      if [ $? -eq 0 ]; then
+        checkVaultName
+        eval $(op signin)
+        myPassword=$(op read op://${myDefaultVault}/vpn-${myName}/password)
+        echo $myPassword > ~/.${myName}-password
+      else
+        printf "Please put your password in ~/.${myName}-password\n"
+        exit 1
+      fi
     fi
   fi
 }
@@ -44,9 +47,12 @@ passwordFileCreate() {
 
 passwordFileRemove() {
   # op seems too generic. Let's make sure op is actually 1password
-  op --help | head -n1 | grep 1Password >/dev/null 2>&1
+  hash op >/dev/null 2>&1
   if [ $? -eq 0 ]; then
-    test -f ~/.${myName}-password && rm ~/.${myName}-password
+    op --help | head -n1 | grep 1Password >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+      test -f ~/.${myName}-password && rm ~/.${myName}-password
+    fi
   fi
 }
 
