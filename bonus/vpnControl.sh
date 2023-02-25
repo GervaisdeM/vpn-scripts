@@ -1,4 +1,4 @@
-#!/opt/homebrew/bin/bash
+#!/usr/bin/env bash
 
 # This script works on macOS to manage connecting, disconnecting, checking
 # status of VPNs configured with vpn-scripts running on a Linux VM that has
@@ -49,7 +49,7 @@
 # }}}
 # {{{ set some default values
 
-#Set Colours
+# Set Colours
 boldTXT="\e[1m"
 noBoldTXT="\e[0m"
 resetTXT="\e[39m"
