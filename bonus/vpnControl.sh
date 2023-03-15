@@ -59,7 +59,7 @@ yellowTXT="\x1B[33m"
 
 vpnScriptPath="~/vpn-scripts"
 vpnServerName="VPN-Linux"
-vmStartWait=10
+vmStartWait=0
 
 # }}}
 # {{{ showUsage()
@@ -135,14 +135,16 @@ startVPNlinux() {
     pingResult=$?
     let myWaitCount=myWaitCount+1
   done
-  printf "\nWaiting $vmStartWait seconds for vm to fully initialize\n"
-  printf "$vmStartWait"
-  myWaitCount=0
-  while [ $myWaitCount -lt $vmStartWait ]; do
-    sleep 1
-    let vmStartWait=vmStartWait-1
-    printf "..$vmStartWait"
-  done
+  if [ $vmStartWait -gt 0 ]; then
+    printf "\nWaiting $vmStartWait seconds for vm to fully initialize\n"
+    printf "$vmStartWait"
+    myWaitCount=0
+    while [ $myWaitCount -lt $vmStartWait ]; do
+      sleep 1
+      let vmStartWait=vmStartWait-1
+      printf "..$vmStartWait"
+    done
+  fi
   printf "\n"
 }
 
