@@ -124,7 +124,7 @@ vpnStatus() {
         exit 0
       fi
     else
-      otherName=$(ps p ${openconnectPid} | grep -o "\/var\/run\/.\+\.pid" | cut -d"/" -f4 | cut -d"." -f1)
+      otherName=$(ps p ${openconnectPid} | grep -o "\/var\/run\/.\+\.pid" 2>/dev/null | cut -d"/" -f4 | cut -d"." -f1)
       printf  "${redTXT}${otherName} is already connected!${resetTXT}\n"
       printf  "Run ${boldTXT}${myDir}/${otherName}.sh -d${noboldTXT} and try again.\n"
       exit 1
