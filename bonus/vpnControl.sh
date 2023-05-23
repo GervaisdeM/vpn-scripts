@@ -227,7 +227,13 @@ vpnLinuxShutdown() {
     printf "${yellowTXT}${vpnServerName} Server is already offline${resetTXT}\n"
   fi
   # Quit UTM is no other VM's are running
-  utmctl list | grep -v $vpnServerName | grep started >/dev/null 2>&1 || printf "${greenTXT}No other VM's are running.\n${yellowTXT}Quitting ${boldTXT}UTM${noBoldTXT}.${resetTXT}\n" ; osascript -e 'tell application "UTM" to quit'
+  utmctl list | grep -v $vpnServerName | grep started >/dev/null 2>&1
+  if [ "$?" -ne "0" ]; then
+    printf "${greenTXT}No other VM's are running.\n${yellowTXT}Quitting ${boldTXT}UTM${noBoldTXT}.${resetTXT}\n"
+    osascript -e 'tell application "UTM" to quit'
+  else
+    printf "${yellowTXT}Other VM's are running.\n${redTXT}Not quitting ${boldTXT}UTM${noBoldTXT}.${resetTXT}\n"
+  fi
 }
 
 # }}}
