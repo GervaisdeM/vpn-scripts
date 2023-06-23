@@ -51,7 +51,7 @@ passwordFileRemove() {
   if [ $? -eq 0 ]; then
     op --help | head -n1 | grep 1Password >/dev/null 2>&1
     if [ $? -eq 0 ]; then
-      test -f ~/.${myName}-password && rm ~/.${myName}-password
+      test -f ~/.${myName}-password && rm ~/.${myName}-password || return 0
     fi
   fi
 }
