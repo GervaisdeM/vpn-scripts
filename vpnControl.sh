@@ -43,6 +43,7 @@ checkVPNname(){
     vpnName="$1"
   else
     if [ -z "$myDefaultVPN" ]; then
+      printf "Please pass a vpnName or set the environment variable myDefaultVPN\n"
       showUsage
     else
       vpnName=$myDefaultVPN
@@ -82,9 +83,7 @@ exit 3
 # {{{ vpnConnect()
 
 vpnConnect() {
-  #passwordFileCreate
   ${vpnScriptPath}/${vpnName}-vpn.sh -c
-  #passwordFileRemove
 }
 
 # }}}
