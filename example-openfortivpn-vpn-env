@@ -1,0 +1,30 @@
+# Adjust these to match the VPN you are trying to connect to
+
+# Although openconnect supports fortinet, it does not support SSO
+# authentication. This example opens an Electron browser that brings you to
+# your SAML login page where you log in. After logging in, it dumps a valid
+# SVPNCOOKIE for this session to standard out. We pass that straight to
+# openfortivpn in the connection example below and it uses this to connect.
+
+myHost="hostname.of.my.vpn.server.com"
+myPort="4443"
+
+# This is an Electron App that I built from this repo:
+#   https://github.com/gm-vm/openfortivpn-webview.git
+mySamlCookieGrabber="/Applications/openfortivpn-webview.app/Contents/MacOS/openfortivpn-webview"
+
+# Most SAML end point will be the following
+mySamlEndPoint="/remote/saml/start"
+
+vpnConnect() {
+  ${mySamlCookieGrabber} \
+    --url https://${myHost}:${myPort}${mySamlEndPoint} 2>/dev/null | \
+    openfortivpn ${myHost}:${myPort} \
+    --cookie-on-stdin > /dev/null 2>&1 &
+
+# Nothing below should be altered
+  if [ "$?" -eq 0 ]; then
+    printf "${greenTXT}VPN connecting.${resetTXT}\n"
+    pgrep -n openfortivpn > $pidFile
+  fi
+}

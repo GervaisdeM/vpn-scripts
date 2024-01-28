@@ -106,6 +106,7 @@ vpnDisconnect() {
     kill $(cat ${pidFile})
     sleep .5
     printf "${boldTXT}${yellowTXT}Disconnected${resetTXT}${noBoldTXT}\n"
+    test -f ${pidFile} && rm -f ${pidFile}
   else
     $0 -s
   fi
@@ -115,10 +116,10 @@ vpnDisconnect() {
 #{{{ vpnStatus()
 
 vpnStatus() {
-  openconnectPid=$(ps aux | pgrep openconnect)
+  openconnectPid=$(ps aux | pgrep openfortivpn) || openconnectPid=$(ps aux | pgrep openconnect)
   if [ $? -eq 0 ]; then
     if [ -f ${pidFile} ]; then
-      ps p $(cat $pidFile) | grep ${myName} > /dev/null
+      ps p $(cat ${pidFile}) | grep -E "${myName}|${myHost}" > /dev/null
       if [ $? -eq 0 ]; then
         printf "${greenTXT}VPN ${myName} connected.${resetTXT}\n"
         exit 0

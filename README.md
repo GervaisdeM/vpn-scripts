@@ -6,6 +6,7 @@ I have to connect to multiple client vpn's for work and did not want to install 
 This script has been tested on Ubuntu and macOS.
 
 ## Requirements
+See example-openconnect-vpn-env for an example config.
 * openconnect
 
 ### Install openconnect
@@ -17,6 +18,28 @@ sudo apt install openconnect
 ```
 brew install openconnect
 ```
+
+## Optional
+See example-openfortivpn-vpn-env for an example config.  
+Although openconnect supports fortinet protocol, it does not support SSO authentication. If you require SSO auth, you need a way to grab your session cookie. I cloned openfortivpn-webviews repo and built the Electron app for this purpose.  
+ 
+* openfortivpn
+* openfortivpn-webview
+
+### Install openfortivpn
+##### Ubuntu
+```
+sudo apt install openfortivpn
+```
+##### macOS
+```
+brew install openfortivpn
+```
+### Install openfortivpn-webview
+Clone this repo and built the Electron app following the directions on the repo. 
+
+	git clone https://github.com/gm-vm/openfortivpn-webview
+
 ## Setting up
 * To use these scripts clone them down to your computer.
 * Keep the files all in the same folder.
@@ -99,4 +122,21 @@ or
 ```
 ./customer1-vpn.sh -d
 Disconnected
+```
+
+## vpnControl.sh
+Although this should work on Linux, it has only been tested on macOS.
+Symlink this into my path and use it to launch any previously configured VPN. 
+
+See the help:
+```
+vpnControl.sh -h
+```
+
+## vpnVMcontrol.sh
+This has only been tested on macOS with Ubuntu 22 running on UTM. It could easily be extended or altered to support alternal VM controlers such as vmWare or VirtualBox.
+
+See the help:
+```
+vpnVMcontrol.sh -h
 ```

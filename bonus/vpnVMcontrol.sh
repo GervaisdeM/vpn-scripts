@@ -59,7 +59,7 @@ yellowTXT="\x1B[33m"
 
 vpnScriptPath="~/vpn-scripts"
 vpnServerName="VPN-Linux"
-vmStartWait=0
+vmStartWait=2
 
 # }}}
 # {{{ showUsage()
