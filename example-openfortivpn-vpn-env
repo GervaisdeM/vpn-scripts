@@ -9,22 +9,39 @@
 myHost="hostname.of.my.vpn.server.com"
 myPort="4443"
 
-# This is an Electron App that I built from this repo:
+# This is an Electron App that was downloaded from this repo:
 #   https://github.com/gm-vm/openfortivpn-webview.git
 mySamlCookieGrabber="/Applications/openfortivpn-webview.app/Contents/MacOS/openfortivpn-webview"
+mySamlCookieGrabberOptions=""
 
 # Most SAML end point will be the following
 mySamlEndPoint="/remote/saml/start"
 
+myopenfortivpnOptions=""
+# my connection kept droppping, so running a keep alive ping
+# choose a server behind the vpn to ping
+keepAlivePing="ping 172.31.52.34"
+
 vpnConnect() {
   ${mySamlCookieGrabber} \
+    $mySamlCookieGrabberOptions \
     --url https://${myHost}:${myPort}${mySamlEndPoint} 2>/dev/null | \
     openfortivpn ${myHost}:${myPort} \
-    --cookie-on-stdin > /dev/null 2>&1 &
+    --cookie-on-stdin \
+    $myopenfortivpnOptions \
+    > /dev/null 2>&1 &
+
+  $keepAlivePing -c1 -t1 > /dev/null
+  pingResult=$?
+  while [ $pingResult -ne 0 ]; do
+    $keepAlivePing -c1 -t1 > /dev/null
+    pingResult=$?
+  done
 
 # Nothing below should be altered
   if [ "$?" -eq 0 ]; then
-    printf "${greenTXT}VPN connecting.${resetTXT}\n"
+    printf "${greenTXT}VPN connected.${resetTXT}\n"
     pgrep -n openfortivpn > $pidFile
+    $keepAlivePing > /dev/null &
   fi
 }

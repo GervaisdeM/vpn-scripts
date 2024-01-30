@@ -107,6 +107,9 @@ vpnDisconnect() {
     sleep .5
     printf "${boldTXT}${yellowTXT}Disconnected${resetTXT}${noBoldTXT}\n"
     test -f ${pidFile} && rm -f ${pidFile}
+    if [ -n "$keepAlivePing" ]; then
+      kill $(pgrep -f "$keepAlivePing")
+    fi
   else
     $0 -s
   fi
