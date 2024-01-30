@@ -36,7 +36,7 @@ sudo apt install openfortivpn
 brew install openfortivpn
 ```
 ### Install openfortivpn-webview
-Clone this repo and built the Electron app following the directions on the repo. 
+Clone this repo and built the Electron app following the directions on the repo or download the prebuilt versions if they run for you.
 
 	git clone https://github.com/gm-vm/openfortivpn-webview
 
