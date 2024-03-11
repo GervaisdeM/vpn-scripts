@@ -129,8 +129,14 @@ vpnStatus() {
       fi
     else
       otherName=$(ps p ${openconnectPid} | grep -o "\/var\/run\/.\+\.pid" 2>/dev/null | cut -d"/" -f4 | cut -d"." -f1)
-      printf  "${redTXT}${otherName} is already connected!${resetTXT}\n"
-      printf  "Run ${boldTXT}${myDir}/${otherName}.sh -d${noboldTXT} and try again.\n"
+      if [ "$otherName" = "" ]; then
+        otherName="Unknown Connection"
+        printf "${redTXT}${otherName} is already connected!${resetTXT}\n"
+        printf "A connection is open that is not managed by vpn-scripts.\n"
+      else
+        printf "${redTXT}${otherName} is already connected!${resetTXT}\n"
+        printf "Run ${boldTXT}${myDir}/${otherName}.sh -d${noboldTXT} and try again.\n"
+      fi
       exit 1
     fi
   fi
