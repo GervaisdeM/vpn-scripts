@@ -31,7 +31,7 @@ passwordFileCreate() {
       op --help | head -n1 | grep 1Password >/dev/null 2>&1
       if [ $? -eq 0 ]; then
         checkVaultName
-        eval $(op signin)
+        eval $(op signin --account my)
         myPassword=$(op read op://${myDefaultVault}/vpn-${myName}/password)
         echo $myPassword > ~/.${myName}-password
       fi
