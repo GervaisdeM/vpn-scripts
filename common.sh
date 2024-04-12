@@ -128,7 +128,7 @@ vpnStatus() {
         exit 0
       fi
     else
-      otherName=$(ps p ${openconnectPid} | grep -o "\/var\/run\/.\+\.pid" 2>/dev/null | cut -d"/" -f4 | cut -d"." -f1)
+      otherName=$( grep -l ${openconnectPid} /var/run/*.pid 2>/dev/null | grep -o "\/var\/run\/.\+\.pid" 2>/dev/null | cut -d"/" -f4 | cut -d"." -f1)
       if [ "$otherName" = "" ]; then
         otherName="Unknown Connection"
         printf "${redTXT}${otherName} is already connected!${resetTXT}\n"
